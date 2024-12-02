@@ -1,0 +1,36 @@
+# Use Ubuntu 20.04 as the base image
+FROM ubuntu:20.04
+
+# Set the working directory in the container
+WORKDIR /
+
+# Copy all files from the current directory to the working directory in the container
+COPY . .
+
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install Node.js and npm (Ubuntu 20.04 does not include Node.js by default)
+# RUN apt-get update && apt-get install -y nodejs npm
+
+RUN apt-get update && \
+    apt-get install -y curl gnupg2 lsb-release ca-certificates && \
+    curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
+    apt-get install -y nodejs
+
+RUN node -v    
+
+RUN apt-get update
+
+RUN apt install zip unzip telnet curl -y
+
+RUN curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash && az upgrade && az extension add --name containerapp --upgrade --allow-preview true
+
+# Install dependencies
+RUN npm install
+
+# Start the Node.js application
+CMD [ "npm", "start" ]
+
+# Expose the port the application runs on
+EXPOSE 3000
